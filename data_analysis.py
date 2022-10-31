@@ -17,7 +17,7 @@ This is a temporary script file.
     Column9: magnetometer y
     Column10: magnetometer z
     Column11: Timestamp
-    Column12: Activity Label
+    Column12: Activity Label (16 atividades)
 """
 
 import numpy as np
@@ -32,7 +32,6 @@ for i in range (0,14):
 df = pd.read_csv(loc[0], sep=',', header=None)
 array = df.to_numpy()
 
-print(array[:,2])
 
 t_acc = np.sqrt(np.add(np.square(array[:,1]),
                        np.square(array[:,2]),
@@ -46,19 +45,32 @@ t_mag = np.sqrt(np.add(np.square(array[:,7]),
                        np.square(array[:,8]),
                        np.square(array[:,9])))
 
-print(np.sum(array[:,-1]))
 
-fig = plt.figure(figsize =(10, 7))
-plt.boxplot(t_acc)
-plt.show()
+# act1 = t_acc[array[:,-1]==5]
+act = (array[:,-1]==i)
+print(t_acc[act])
+print(np.array([t_acc[act]]))
+
+activities = np.arange(1, 17)
+box_array = [] # TODO ver se dá para fazer isto com np.array
+for i in range(1,17):
+    act = (array[:,-1]==i)
+    #box_array.append(t_acc[act])
+    box_array.append(t_acc[act])
+    print(box_array)
+
+plt.figure()
+plt.boxplot(box_array, 0, 'gD')
 
 
+'''
+fig, ax = plt.subplots(3, 1)
+pos = np.arange(len(treatments)) + 1
 
-
-
-"""
-with open('dev2_wrist/part0dev2.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-
-type(spamreader)
-"""
+fig, ax = plt.subplots()
+ax.boxplot(t_acc, 0, 'gD') 
+fig, ax = plt.subplots()
+ax.boxplot(t_gyr)
+fig, ax = plt.subplots()
+ax.boxplot(t_mag)
+'''
