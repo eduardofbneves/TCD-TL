@@ -23,6 +23,7 @@ This is a temporary script file.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy import stats
 
 loc = []
 
@@ -60,6 +61,8 @@ for i in range(1,17):
 plt.figure()
 plt.boxplot(box_array, 0, 'gD')
 plt.title("Acelerómetro")
+d = []
+outl = []
 
 
 for i in range(0,activities.size):
@@ -71,24 +74,16 @@ for i in range(0,activities.size):
 
     upper_bound = q3+(1.5*iqr)
     lower_bound = q1-(1.5*iqr)
-    print(iqr, upper_bound, lower_bound)
 
     outliers = box_array[:][i][(box_array[:][i] <= lower_bound) | (box_array[:][i] >= upper_bound)]
+    out_bool = (box_array[:][i] <= lower_bound) | (box_array[:][i] >= upper_bound)
     print('The following are the outliers in the boxplot:{}'.format(outliers))
     box_array[:][i] = box_array[:][i][(box_array[:][i] >= lower_bound) & (box_array[:][i] <= upper_bound)]
+ 
+    unique, counts = np.unique(out_bool, return_counts=True)
+    d.append((counts[1]/out_bool.size)*100)
     
-plt.figure(figsize=(12, 7))
-plt.boxplot(box_array)
-plt.show()
-
-'''
-fig, ax = plt.subplots(3, 1)
-pos = np.arange(len(treatments)) + 1
-
-fig, ax = plt.subplots()
-ax.boxplot(t_acc, 0, 'gD') 
-fig, ax = plt.subplots()
-ax.boxplot(t_gyr)
-fig, ax = plt.subplots()
-ax.boxplot(t_mag)
-'''
+    zscore = stats.zscore(box_array[:][i], axis=0, ddof=0, nan_policy='propagate')
+    outliers = box_array[:][i][(zscore <= -3) | (zscore >= 3)]
+    print('The following are the outliers from the z-score test:{}'.format(outliers))
+    outl.append(outliers)
