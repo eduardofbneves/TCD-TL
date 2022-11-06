@@ -59,10 +59,12 @@ for i in range(1,17):
 
 #box_array = np.array(box_array)
 plt.figure()
-plt.boxplot(box_array, 0, 'gD')
+plt.boxplot(box_array)
 plt.title("Acelerómetro")
 d = []
-outl = []
+outliers1 = [] 
+outliers2 = [] 
+outliers3 = []
 
 
 for i in range(0,activities.size):
@@ -71,7 +73,6 @@ for i in range(0,activities.size):
     med = np.median(box_array[:][i])
     
     iqr = q3-q1
-
     upper_bound = q3+(1.5*iqr)
     lower_bound = q1-(1.5*iqr)
 
@@ -84,6 +85,12 @@ for i in range(0,activities.size):
     d.append((counts[1]/out_bool.size)*100)
     
     zscore = stats.zscore(box_array[:][i], axis=0, ddof=0, nan_policy='propagate')
-    outliers = box_array[:][i][(zscore <= -3) | (zscore >= 3)]
-    print('The following are the outliers from the z-score test:{}'.format(outliers))
-    outl.append(outliers)
+    outliers1.append(box_array[:][i][(zscore <= -3) | (zscore >= 3)])
+    print('The following are the outliers from the z-score test: {}'.format(outliers1[:][i]))
+    
+plt.figure()
+plt.boxplot(box_array, outliers1, 'gD')
+plt.title("k=3")
+
+
+
