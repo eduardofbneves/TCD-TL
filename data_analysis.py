@@ -24,6 +24,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
+#import utils
+
 
 loc = []
 
@@ -74,7 +76,6 @@ outliersk = []
 
 # for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
 for box in ([box_acc, box_gyr, box_mag]):
-    print("a")
     for i in range(0,activities.size):
         q1 = np.quantile(box[:][i], 0.25)
         q3 = np.quantile(box[:][i], 0.75)
@@ -89,9 +90,9 @@ for box in ([box_acc, box_gyr, box_mag]):
         #print('The following are the outliers in the boxplot:{}'.format(outliers))
         box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
         
-        print(i)
-        unique, counts = np.unique(out_bool, return_counts=True)
-        d.append((counts[1]/out_bool.size)*100) # TODO se a coluna nao tiver desvios
+        # unique, counts = np.unique(out_bool, return_counts=True)
+        counts = out_bool.sum()
+        d.append((counts/out_bool.size)*100) # TODO se a coluna nao tiver desvios
         
         zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
         outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
