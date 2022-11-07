@@ -51,45 +51,54 @@ t_mag = np.sqrt(np.add(np.square(array[:,7]),
 act = (array[:,-1]==i)
 
 activities = np.arange(1, 17) # nao sei se util
-box_array = [] # TODO ver se dá para fazer isto com np.array
+box_acc = [] # TODO ver se dá para fazer isto com np.array
+box_gyr = []
+box_mag = []
 for i in range(1,17):
     act = (array[:,-1]==i)
-    box_array.append(t_acc[act]) # usar list porque colunas tem tamanhos diferentes
-    #box_array = [box_array, t_acc[act]]
+    box_acc.append(t_acc[act]) # usar list porque colunas tem tamanhos diferentes
+    box_gyr.append(t_gyr[act])
+    box_mag.append(t_mag[act])
+    #box_acc = [box_acc, t_acc[act]]
 
-#box_array = np.array(box_array)
+#box_acc = np.array(box_acc)
 plt.figure()
-plt.boxplot(box_array)
-plt.title("Acelerómetro")
+fig, axs = plt.subplots(3)
+axs[0].boxplot(box_acc)
+axs[1].boxplot(box_gyr)
+axs[2].boxplot(box_mag)
+
+# desvio e outliers para cada k = 3, 3.5, 4
 d = []
-outliers1 = [] 
-outliers2 = [] 
-outliers3 = []
+outliersk = [] 
 
-
-for i in range(0,activities.size):
-    q1 = np.quantile(box_array[:][i], 0.25)
-    q3 = np.quantile(box_array[:][i], 0.75)
-    med = np.median(box_array[:][i])
+# for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
+for box in ([box_acc, box_gyr, box_mag]):
+    print("a")
+    for i in range(0,activities.size):
+        q1 = np.quantile(box[:][i], 0.25)
+        q3 = np.quantile(box[:][i], 0.75)
+        med = np.median(box[:][i])
+        
+        iqr = q3-q1
+        upper_bound = q3+(1.5*iqr)
+        lower_bound = q1-(1.5*iqr)
     
-    iqr = q3-q1
-    upper_bound = q3+(1.5*iqr)
-    lower_bound = q1-(1.5*iqr)
-
-    outliers = box_array[:][i][(box_array[:][i] <= lower_bound) | (box_array[:][i] >= upper_bound)]
-    out_bool = (box_array[:][i] <= lower_bound) | (box_array[:][i] >= upper_bound)
-    print('The following are the outliers in the boxplot:{}'.format(outliers))
-    box_array[:][i] = box_array[:][i][(box_array[:][i] >= lower_bound) & (box_array[:][i] <= upper_bound)]
- 
-    unique, counts = np.unique(out_bool, return_counts=True)
-    d.append((counts[1]/out_bool.size)*100)
-    
-    zscore = stats.zscore(box_array[:][i], axis=0, ddof=0, nan_policy='propagate')
-    outliers1.append(box_array[:][i][(zscore <= -3) | (zscore >= 3)])
-    print('The following are the outliers from the z-score test: {}'.format(outliers1[:][i]))
+        outliers = box[:][i][(box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)]
+        out_bool = (box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)
+        #print('The following are the outliers in the boxplot:{}'.format(outliers))
+        box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
+        
+        print(i)
+        unique, counts = np.unique(out_bool, return_counts=True)
+        d.append((counts[1]/out_bool.size)*100) # TODO se a coluna nao tiver desvios
+        
+        zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
+        outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
+        #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
     
 plt.figure()
-plt.boxplot(box_array, outliers1, 'gD')
+plt.boxplot(box, outliersk, 'gD')
 plt.title("k=3")
 
 
