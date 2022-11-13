@@ -10,25 +10,40 @@ from numpy.linalg import norm
 
 # X.sample usado em DataFrame e nao nparrays
 
-def centroids(data, clusters):
+def get_centroids(data, clusters):
     if type(data) != np.ndarray:
         data = np.array(data)
     rand_id = np.random.permutation(data.shape[0])
-    c_array = np.zeros((clusters, data.shape[1]))
-    centroid = data[rand_id[:c_array.size]] # cria 3 centroides para cada coluna
-    return centroid
+    centroids = data[rand_id[:(data.shape[1]*clusters)]] # cria 3 centroides para cada coluna
+    return centroids
 
-
-def compute_cluster(data, centroid, clusters):
-    diff = 1
-    
+def get_distance(data, centroids, clusters):
     distance = np.zeros((data.shape[0], clusters))
-    diff = 1
-    while (diff!=0):
-        
+    for k in range(clusters):
+        row_norm = norm(data - centroids[k, :], axis=1) # TODO reformular isto
+        distance[:, k] = np.square(row_norm)
+    return distance
 
+def compute_centroids(data, clusters, distance):
+    centroids = np.zeros((clusters, data.shape[1]))
+    arr_min = np.argmin(distance, axis=1)
+    for k in range(clusters):
+        centroids[k, :] = np.mean(data[arr_min == k, :], axis=0)
+    return centroids
+
+def fit(data, clusters):
+    centroids = get_centroids(data, clusters)
+    diff = 1
+    while diff!=0:
+        old_centroids = centroids
+        distance = get_distance(data, old_centroids)
+        centroids = compute_centroids(data, clusters, distance)
+        diff = np.sum(np.subtract(centroids, old_centroids))
+        #if np.all(old_centroids == centroids):
+        #    break
+        
+        '''
 class K_means:
-    '''Implementing Kmeans algorithm.'''
     
 
     def __init__(self, n_clusters, max_iter=100, random_state=123):
@@ -78,3 +93,4 @@ class K_means:
     def predict(self, X):
         distance = self.compute_distance(X, self.centroids)
         return self.find_closest_cluster(distance)
+    '''
