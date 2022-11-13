@@ -82,6 +82,7 @@ outliersk = []
 # for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
 for box in ([box_acc, box_gyr, box_mag]):
     for i in range(0,activities.size):
+        # verificar outliers segundo o boxplot
         q1 = np.quantile(box[:][i], 0.25)
         q3 = np.quantile(box[:][i], 0.75)
         med = np.median(box[:][i])
@@ -89,7 +90,8 @@ for box in ([box_acc, box_gyr, box_mag]):
         iqr = q3-q1
         upper_bound = q3+(1.5*iqr)
         lower_bound = q1-(1.5*iqr)
-    
+        
+        # tirar os valores do outliers
         outliers = box[:][i][(box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)]
         out_bool = (box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)
         #print('The following are the outliers in the boxplot:{}'.format(outliers))
@@ -99,10 +101,12 @@ for box in ([box_acc, box_gyr, box_mag]):
         counts = out_bool.sum()
         d.append((counts/out_bool.size)*100) # TODO se a coluna nao tiver desvios
         
+        # teste z-score
         zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
         outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
         #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
-    
+
+centroids = get_centroids()
 plt.figure()
 plt.boxplot(box, outliersk, 'gD')
 plt.title("k=3")
