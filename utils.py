@@ -10,11 +10,22 @@ from numpy.linalg import norm
 
 # X.sample usado em DataFrame e nao nparrays
 
-def centroids(axis, k, ):
+def centroids(data, clusters):
+    if type(data) != np.ndarray:
+        data = np.array(data)
+    rand_id = np.random.permutation(data.shape[0])
+    c_array = np.zeros((clusters, data.shape[1]))
+    centroid = data[rand_id[:c_array.size]] # cria 3 centroides para cada coluna
+    return centroid
+
+
+def compute_cluster(data, centroid, clusters):
+    diff = 1
     
-
-
-
+    distance = np.zeros((data.shape[0], clusters))
+    diff = 1
+    while (diff!=0):
+        
 
 class K_means:
     '''Implementing Kmeans algorithm.'''

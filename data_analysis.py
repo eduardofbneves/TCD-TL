@@ -35,40 +35,45 @@ for i in range (0,14):
 df = pd.read_csv(loc[0], sep=',', header=None)
 array = df.to_numpy()
 
+# modules of the vectors
+t_acc = np.sqrt(np.add(np.square(array[:,[1]]),
+                       np.square(array[:,[2]]),
+                       np.square(array[:,[3]])))
 
-t_acc = np.sqrt(np.add(np.square(array[:,1]),
-                       np.square(array[:,2]),
-                       np.square(array[:,3])))
+t_gyr = np.sqrt(np.add(np.square(array[:,[4]]),
+                       np.square(array[:,[5]]),
+                       np.square(array[:,[6]])))
 
-t_gyr = np.sqrt(np.add(np.square(array[:,4]),
-                       np.square(array[:,5]),
-                       np.square(array[:,6])))
-
-t_mag = np.sqrt(np.add(np.square(array[:,7]),
-                       np.square(array[:,8]),
-                       np.square(array[:,9])))
+t_mag = np.sqrt(np.add(np.square(array[:,[7]]),
+                       np.square(array[:,[8]]),
+                       np.square(array[:,[9]])))
 
 
 # act1 = t_acc[array[:,-1]==5]
-act = (array[:,-1]==i)
 
-activities = np.arange(1, 17) # nao sei se util
+activities = [] # nao sei se util
 box_acc = [] # TODO ver se dá para fazer isto com np.array
 box_gyr = []
 box_mag = []
 for i in range(1,17):
-    act = (array[:,-1]==i)
+    activities.append(array[:,-1]==i)
+    '''
     box_acc.append(t_acc[act]) # usar list porque colunas tem tamanhos diferentes
     box_gyr.append(t_gyr[act])
     box_mag.append(t_mag[act])
     #box_acc = [box_acc, t_acc[act]]
+    '''
+    
+activities = np.array(activities).transpose()
 
 #box_acc = np.array(box_acc)
 plt.figure()
 fig, axs = plt.subplots(3)
-axs[0].boxplot(box_acc)
-axs[1].boxplot(box_gyr)
-axs[2].boxplot(box_mag)
+axs[0].boxplot(np.multiply(t_acc, activities))
+axs[1].boxplot(np.multiply(t_gyr, activities))
+axs[2].boxplot(np.ma.masked_equal(np.multiply(t_mag, activities), 0))
+#axs[2].boxplot(np.ma.masked_equal(np.multiply(t_mag, activities), 0))
+
 
 # desvio e outliers para cada k = 3, 3.5, 4
 d = []
