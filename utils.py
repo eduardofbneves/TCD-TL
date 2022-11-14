@@ -14,18 +14,18 @@ def get_centroids(data, clusters):
     if type(data) != np.ndarray:
         data = np.array(data)
     rand_id = np.random.permutation(data.shape[0])
-    centroids = data[rand_id[:(data.shape[1]*clusters)]] # cria 3 centroides para cada coluna
+    centroids = data[rand_id[:(clusters)]] # cria 3 centroides para cada coluna
     return centroids
 
 def get_distance(data, centroids, clusters):
     distance = np.zeros((data.shape[0], clusters))
     for k in range(clusters):
-        row_norm = norm(data - centroids[k, :], axis=1) # TODO reformular isto
+        row_norm = norm(data - centroids[k], axis=1) # TODO reformular isto
         distance[:, k] = np.square(row_norm)
     return distance
 
 def compute_centroids(data, clusters, distance):
-    centroids = np.zeros((clusters, data.shape[1]))
+    centroids = np.zeros((clusters, 1))
     arr_min = np.argmin(distance, axis=1)
     for k in range(clusters):
         centroids[k, :] = np.mean(data[arr_min == k, :], axis=0)
@@ -36,13 +36,15 @@ def fit(data, clusters):
     diff = 1
     while diff!=0:
         old_centroids = centroids
-        distance = get_distance(data, old_centroids)
+        distance = get_distance(data, old_centroids, clusters)
         centroids = compute_centroids(data, clusters, distance)
         diff = np.sum(np.subtract(centroids, old_centroids))
+    return centroids
+
         #if np.all(old_centroids == centroids):
         #    break
-        
-        '''
+
+'''
 class K_means:
     
 
@@ -58,7 +60,7 @@ class K_means:
         return centroids
 
     def compute_centroids(self, X, labels):
-        centroids = np.zeros((self.n_clusters, X.shape[1]))
+        centroids = np.zeros((self.n_clusters, X.1))
         for k in range(self.n_clusters):
             centroids[k, :] = np.mean(X[labels == k, :], axis=0)
         return centroids

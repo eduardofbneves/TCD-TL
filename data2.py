@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
+import utils
 
 loc = []
 
@@ -54,7 +55,7 @@ box_gyr = []
 box_mag = []
 for i in range(1,17):
     act = (array[:,-1]==i)
-    box_acc.append(t_acc[act]) # usar list porque colunas tem tamanhos diferentes
+    box_acc.append(t_acc[act]) # TODO outra forma?
     box_gyr.append(t_gyr[act])
     box_mag.append(t_mag[act])
 
@@ -71,7 +72,7 @@ outliersk = []
 
 # for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
 for box in ([box_acc, box_gyr, box_mag]):
-    for i in range(0,activities.size):
+    for i in range(16):
         q1 = np.quantile(box[:][i], 0.25)
         q3 = np.quantile(box[:][i], 0.75)
         med = np.median(box[:][i])
@@ -86,15 +87,17 @@ for box in ([box_acc, box_gyr, box_mag]):
         box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
         
         print(i)
-        unique, counts = np.unique(out_bool, return_counts=True)
-        d.append((counts[1]/out_bool.size)*100) # TODO se a coluna nao tiver desvios
+        #unique, counts = np.unique(out_bool, return_counts=True)
+        counts = np.count_nonzero(out_bool==True)
+        d.append((counts/out_bool.size)*100) # TODO se a coluna nao tiver desvios
         
         zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
         outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
         #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
+        
+        utils.fit(box[:][i], 3)
     
+
 plt.figure()
 plt.boxplot(box, outliersk, 'gD')
 plt.title("k=3")
-
-
