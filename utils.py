@@ -2,6 +2,7 @@
 """
 Created on Mon Nov  7 16:53:53 2022
 
+Produced to apply on a vector of data for a boxplot
 @author: Eduardo
 """
 
@@ -20,7 +21,7 @@ def get_centroids(data, clusters):
 def get_distance(data, centroids, clusters):
     distance = np.zeros((data.shape[0], clusters))
     for k in range(clusters):
-        row_norm = norm(data - centroids[k], axis=1) # TODO reformular isto
+        row_norm = data - centroids[k] # TODO reformular isto
         distance[:, k] = np.square(row_norm)
     return distance
 
@@ -28,10 +29,10 @@ def compute_centroids(data, clusters, distance):
     centroids = np.zeros((clusters, 1))
     arr_min = np.argmin(distance, axis=1)
     for k in range(clusters):
-        centroids[k, :] = np.mean(data[arr_min == k, :], axis=0)
+        centroids[k, :] = np.mean(data[arr_min == k], axis=0)
     return centroids
 
-def fit(data, clusters):
+def k_means(data, clusters):
     centroids = get_centroids(data, clusters)
     diff = 1
     while diff!=0:
@@ -39,8 +40,13 @@ def fit(data, clusters):
         distance = get_distance(data, old_centroids, clusters)
         centroids = compute_centroids(data, clusters, distance)
         diff = np.sum(np.subtract(centroids, old_centroids))
-    return centroids
+        dist = get_distance(data, centroids, clusters)
+        cluster = np.argmin(dist, axis=1)
+    return centroids, cluster
 
+
+def inject_outliers(x, d, data):
+    
         #if np.all(old_centroids == centroids):
         #    break
 

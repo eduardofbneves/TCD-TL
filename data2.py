@@ -55,6 +55,7 @@ box_gyr = []
 box_mag = []
 for i in range(1,17):
     act = (array[:,-1]==i)
+    #length = np.sum(act)
     box_acc.append(t_acc[act]) # TODO outra forma?
     box_gyr.append(t_gyr[act])
     box_mag.append(t_mag[act])
@@ -69,6 +70,8 @@ axs[2].boxplot(box_mag)
 # desvio e outliers para cada k = 3, 3.5, 4
 d = []
 outliersk = [] 
+
+x_density = 5 # percentage
 
 # for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
 for box in ([box_acc, box_gyr, box_mag]):
@@ -86,7 +89,6 @@ for box in ([box_acc, box_gyr, box_mag]):
         #print('The following are the outliers in the boxplot:{}'.format(outliers))
         box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
         
-        print(i)
         #unique, counts = np.unique(out_bool, return_counts=True)
         counts = np.count_nonzero(out_bool==True)
         d.append((counts/out_bool.size)*100) # TODO se a coluna nao tiver desvios
@@ -95,9 +97,10 @@ for box in ([box_acc, box_gyr, box_mag]):
         outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
         #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
         
-        utils.fit(box[:][i], 3)
+        #iterar para cada coluna
+        centroids, cluster = utils.k_means(box[:][i], 3)
+        print(cluster.shape)
     
 
-plt.figure()
-plt.boxplot(box, outliersk, 'gD')
-plt.title("k=3")
+
+
