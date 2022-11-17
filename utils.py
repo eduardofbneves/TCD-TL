@@ -46,10 +46,16 @@ def k_means(data, clusters):
 
 
 def inject_outliers(x, d, data):
-    
-        #if np.all(old_centroids == centroids):
-        #    break
-
+    out = []
+    if (x>d):
+        points = (x-d)*data.shape[0]*0.01
+        median = np.median(data)
+        sd = np.std(data)
+        s = (np.random.random()*2)-1
+        ran = r
+        for i in range(points):
+            out.append()
+        
 '''
 class K_means:
     

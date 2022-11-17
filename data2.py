@@ -78,7 +78,7 @@ for box in ([box_acc, box_gyr, box_mag]):
     for i in range(16):
         q1 = np.quantile(box[:][i], 0.25)
         q3 = np.quantile(box[:][i], 0.75)
-        med = np.median(box[:][i])
+        #av = np.average(box[:][i])
         
         iqr = q3-q1
         upper_bound = q3+(1.5*iqr)
@@ -99,8 +99,7 @@ for box in ([box_acc, box_gyr, box_mag]):
         
         #iterar para cada coluna
         centroids, cluster = utils.k_means(box[:][i], 3)
-        print(cluster.shape)
-    
+
 
 
 
