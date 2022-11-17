@@ -52,7 +52,7 @@ def inject_outliers(x, d, data):
         median = np.median(data)
         sd = np.std(data)
         s = (np.random.random()*2)-1
-        ran = r
+        ran = np.ptp(data)
         for i in range(points):
             out.append()
         
