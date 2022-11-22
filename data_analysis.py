@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
+import utils
 
 loc = []
 
@@ -92,7 +93,9 @@ for box in ([box_acc, box_gyr, box_mag]):
         zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
         outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
         #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
-    
+        
+        centroids, cluster = utils.k_means(box[:][i], 3)
+        
 plt.figure()
 plt.boxplot(box, outliersk, 'gD')
 plt.title("k=3")

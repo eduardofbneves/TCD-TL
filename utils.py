@@ -8,6 +8,8 @@ Produced to apply on a vector of data for a boxplot
 
 import numpy as np
 from numpy.linalg import norm
+from sklearn import datasets, linear_model, metrics
+from sklearn.model_selection import train_test_split
 
 # X.sample usado em DataFrame e nao nparrays
 
@@ -44,18 +46,44 @@ def k_means(data, clusters):
         cluster = np.argmin(dist, axis=1)
     return centroids, cluster
 
+def get_outliers(vec):
+    q1 = np.quantile(vec, 0.25)
+    q3 = np.quantile(vec, 0.75)
+    #av = np.average(vec)
+    
+    iqr = q3-q1
+    upper_bound = q3+(1.5*iqr)
+    lower_bound = q1-(1.5*iqr)
 
-def inject_outliers(x, d, data):
-    out = []
+    outliers = vec[(vec <= lower_bound) | (vec >= upper_bound)]
+    out_bool = (vec <= lower_bound) | (vec >= upper_bound)
+    
+    counts = np.count_nonzero(out_bool==True)
+    d = (counts/out_bool.size)*100
+    return outliers, d
+
+def inject_outliers(x, d, data, p):
     if (x>d):
-        points = (x-d)*data.shape[0]*0.01
+        points = (x-d)*p*0.01
         median = np.median(data)
         sd = np.std(data)
         s = (np.random.random()*2)-1
-        ran = np.ptp(data)
-        for i in range(points):
-            out.append()
-        
+        rang = np.ptp(data) # range
+        for i in range(np.round(points)):
+            q = np.rando.random()*rang
+            point = np.random.random()*(data.shape[0]-1)
+            data[point] = median+s*3*(sd+q)
+    return data
+
+def fit_linear(X, Y, n):
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=1)
+    reg = linear_model.LinearRegression()
+    reg.fit(X_train[:n], y_train[:n])
+    return reg.coef
+    
+  
+    
+    
 '''
 class K_means:
     

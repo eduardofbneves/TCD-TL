@@ -27,7 +27,7 @@ import utils
 
 loc = []
 
-for i in range (0,14):
+for i in range (0,15):
     loc.append("FORTH_TRACE_DATASET-master/part" + str(i) + "/part" + str(i) + "dev2.csv")
 
 df = pd.read_csv(loc[0], sep=',', header=None)
@@ -90,6 +90,7 @@ for box in ([box_acc, box_gyr, box_mag]):
         box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
         
         #unique, counts = np.unique(out_bool, return_counts=True)
+        #desvios
         counts = np.count_nonzero(out_bool==True)
         d.append((counts/out_bool.size)*100) # TODO se a coluna nao tiver desvios
         
@@ -100,6 +101,13 @@ for box in ([box_acc, box_gyr, box_mag]):
         #iterar para cada coluna
         centroids, cluster = utils.k_means(box[:][i], 3)
 
+p = t_out.shape[0]
+t_out, td = utils.get_outliers(t_acc)
+acc_out = utils.inject_outliers(10, td, t_out, p)
 
+n = 
+test = np.rand.randint(n,n)*ran
 
-
+# kolmogorov-smirnov test
+for in range(16):
+    stats.kstest(box_acc[:][i], 'norm') # if follows a gaussian
