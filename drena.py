@@ -1,29 +1,29 @@
-# -*- coding: utf-8 -*-
-"""
-Spyder Editor
-This is a temporary script file.
-"""
+# %% [markdown]
+# 
+# - Column1: Device ID
+# - Column2: accelerometer x
+# - Column3: accelerometer y
+# - Column4: accelerometer z
+# - Column5: gyroscope x
+# - Column6: gyroscope y
+# - Column7: gyroscope z
+# - Column8: magnetometer x
+# - Column9: magnetometer y
+# - Column10: magnetometer z
+# - Column11: Timestamp
+# - Column12: Activity Label (16 atividades)
+# 
 
-"""
-    Column1: Device ID
-    Column2: accelerometer x
-    Column3: accelerometer y
-    Column4: accelerometer z
-    Column5: gyroscope x
-    Column6: gyroscope y
-    Column7: gyroscope z
-    Column8: magnetometer x
-    Column9: magnetometer y
-    Column10: magnetometer z
-    Column11: Timestamp
-    Column12: Activity Label (16 atividades)
-"""
+# %%
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
-import utils
+from utils import *
+
+
+# %%
 
 loc = []
 
@@ -47,6 +47,9 @@ t_mag = np.sqrt(np.add(np.square(array[:,7]),
                        np.square(array[:,9])))
 
 
+# %%
+
+
 # act1 = t_acc[array[:,-1]==5]
 
 activities = np.arange(1, 17) # nao sei se util
@@ -66,6 +69,9 @@ fig, axs = plt.subplots(3)
 axs[0].boxplot(box_acc)
 axs[1].boxplot(box_gyr)
 axs[2].boxplot(box_mag)
+plt.show()
+
+# %%
 
 # desvio e outliers para cada k = 3, 3.5, 4
 d = []
@@ -99,26 +105,49 @@ for box in ([box_acc, box_gyr, box_mag]):
         #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
         
         #iterar para cada coluna
-        centroids, cluster = utils.k_means(box[:][i], 3)
+        centroids, cluster = k_means(box[:][i], 3)
 
 
-t_out, td = utils.get_outliers(t_acc)
+# %%
+t_out, td = get_outliers(t_acc)
 p = t_out.shape[0]
-acc_out = utils.inject_outliers(27, td, t_out, p) # confirma-se que muda os valores
+acc_out = inject_outliers(10, 4, t_out, p)
 
 
+
+# %%
+it = 0
+for i in range(t_out.size):
+    if t_out[i] != acc_out[i]:
+        it+=1
+
+print(td)
+print(it)
+
+# %%
 for vec in box_acc:
+    
     n = vec.size    
     ran = np.ptp(vec)
     test = np.random.rand(n)*ran
     #print(np.reshape(test[:n], (-1,1)))
     #print(np.reshape(vec[:n], (-1,1)).shape)
     test = np.append(test[:n], test[:n]).reshape(-1, 2)
-    coef = utils.fit_linear(test, vec, n)
+    print(vec[:n].reshape(-1,1))
+    coef = fit_linear(test, vec, n)
     print(coef)
-    
-    
+
+
+# %%
+
 for i in range(16):
     stats.kstest(box_acc[:][i], 'norm') # if follows a gaussian
+
+
+# %%
+
+
+# %% [markdown]
+# 
 
 

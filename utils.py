@@ -10,6 +10,8 @@ import numpy as np
 from numpy.linalg import norm
 from sklearn import datasets, linear_model, metrics
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from scipy import fft
 
 # X.sample usado em DataFrame e nao nparrays
 
@@ -64,26 +66,46 @@ def get_outliers(vec):
 
 def inject_outliers(x, d, data, p):
     if (x>d):
-        points = (x-d)*p*0.01
+        points = round((x-d)*p*0.01)
         median = np.median(data)
         sd = np.std(data)
         s = (np.random.random()*2)-1
         rang = np.ptp(data) # range
-        for i in range(np.round(points)):
-            q = np.rando.random()*rang
-            point = np.random.random()*(data.shape[0]-1)
+        for i in range(points):
+            q = np.random.random()*rang
+            point = round(np.random.random()*(data.shape[0])-1)
             data[point] = median+s*3*(sd+q)
     return data
 
 def fit_linear(X, Y, n):
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=1)
+    #X_train, X_test, y_train, y_test = train_test_split(X, Y, random_state=1)
+    # TODO e suposto usar a cena de cima
     reg = linear_model.LinearRegression()
-    reg.fit(X_train[:n], y_train[:n])
-    return reg.coef
+    reg.fit(X, Y[:n].reshape(-1,1))
+    return reg.coef_
     
+    
+def cagh(head1, head2, grav):
+    euc = np.sqrt(np.add(np.square(head1),
+                           np.square(head2)))
+    out = np.cov(euc, grav)
+    return out
   
+def df_energy(array):
+    domf = []
+    ener = []
+    for i in range(array):
+        fourier = np.square(fft.fft(i))
+        domf.append(np.max(fourier))
+        ener.append(np.sum(fourier)/array.shape[0])
+    aae = np.mean(ener[0:2])
+    are = np.mean(ener[3:5])
+    return domf, ener, aae, are
     
-    
+
+
+
+
 '''
 class K_means:
     
