@@ -9,8 +9,6 @@ Produced to apply on a vector of data for a boxplot
 import numpy as np
 from numpy.linalg import norm
 from sklearn import datasets, linear_model, metrics
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from scipy import fft
 
 # X.sample usado em DataFrame e nao nparrays
@@ -84,8 +82,14 @@ def fit_linear(X, Y, n):
     reg.fit(X, Y[:n].reshape(-1,1))
     return reg.coef_
     
-def mean(data, window):
+def mean(array, window):
+    
     mean = []
+    
+    for i in range(array.shape[0] - window + 1):
+        mean.append(np.meandata[i:(i+window)])
+
+def median(data, window):
     
 def cagh(head1, head2, grav):
     euc = np.sqrt(np.add(np.square(head1),
