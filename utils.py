@@ -84,6 +84,8 @@ def fit_linear(X, Y, n):
     reg.fit(X, Y[:n].reshape(-1,1))
     return reg.coef_
     
+def mean(data, window):
+    mean = []
     
 def cagh(head1, head2, grav):
     euc = np.sqrt(np.add(np.square(head1),
