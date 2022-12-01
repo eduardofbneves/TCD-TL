@@ -83,14 +83,74 @@ def fit_linear(X, Y, n):
     return reg.coef_
     
 def mean(array, window):
-    
     mean = []
-    
-    for i in range(array.shape[0] - window + 1):
-        mean.append(np.meandata[i:(i+window)])
+    #for i in range(array.shape[0] - window + 1)
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        mean.append(np.mean(array[i:(i+window)], axis=0))
+    return np.array(mean)
 
-def median(data, window):
+def median(array, window):
+    median=[]
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        median.append(np.median(array[i:(i+window)], axis=0))
+    return median
+
+def std_var(array, window):
+    std=[]
+    var=[]
+    val = 0
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        val = np.std(array[i:(i+window)], axis=0)
+        std.append(val)
+        var.append(np.square(val))
+    return std, var
+
+
+def rms(array, window):
+    rms=[]
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        rms.append(np.sqrt(np.mean(array[i:(i+window)]**2, axis=0)))
+    return rms
+
+def av_derivatives(array, window):
+    av=[]
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        av.append(np.array[i:(i+window)], axis=0)
+    return av
+
+def irange(array, window):
+    ran=[]
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        ran. append(np.quantile(np.array[i:(i+window)], 0.25, axis=0) - \
+            np.quantile(np.array[i:(i+window)], 0.75, axis=0))
+    return ran
+
+def mov_intensity(t_acc, window):
+    ai = []
+    vi = []
+    for i in range(round(t_acc.shape[0]/window)):
+        i*=window
+        ai.append(np.sum(t_acc[i:(i+window)])/window)
     
+    for i in range(round(t_acc.shape[0]/window)):
+        i*=window
+        vi.append(np.sum(t_acc[i:(i+window)]-np.mean(ai))/window)
+    return ai, vi
+
+def sma(array, window):
+    sma=[]
+    array = np.absolute(array)
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        sma.append(np.sum(array[i:(i+window)], axis = 1))
+    return sma
+
 def cagh(head1, head2, grav):
     euc = np.sqrt(np.add(np.square(head1),
                            np.square(head2)))
