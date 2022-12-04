@@ -1,15 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  7 16:53:53 2022
-
-Produced to apply on a vector of data for a boxplot
-@author: Eduardo
-"""
-
 import numpy as np
 from numpy.linalg import norm
 from sklearn import datasets, linear_model, metrics
 from scipy import fft
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 # X.sample usado em DataFrame e nao nparrays
 
@@ -95,7 +90,7 @@ def median(array, window):
     for i in range(round(array.shape[0]/window)):
         i*=window
         median.append(np.median(array[i:(i+window)], axis=0))
-    return median
+    return np.array(median)
 
 def std_var(array, window):
     std=[]
@@ -106,7 +101,7 @@ def std_var(array, window):
         val = np.std(array[i:(i+window)], axis=0)
         std.append(val)
         var.append(np.square(val))
-    return std, var
+    return np.array(std), np.array(var)
 
 
 def rms(array, window):
@@ -114,22 +109,24 @@ def rms(array, window):
     for i in range(round(array.shape[0]/window)):
         i*=window
         rms.append(np.sqrt(np.mean(array[i:(i+window)]**2, axis=0)))
-    return rms
+    return np.array(rms)
 
+'''
 def av_derivatives(array, window):
     av=[]
     for i in range(round(array.shape[0]/window)):
         i*=window
-        av.append(np.array[i:(i+window)], axis=0)
-    return av
+        av.append(array[i:(i+window)], axis=0)
+    return np.array(av)
+'''
 
 def irange(array, window):
     ran=[]
     for i in range(round(array.shape[0]/window)):
         i*=window
-        ran. append(np.quantile(np.array[i:(i+window)], 0.25, axis=0) - \
-            np.quantile(np.array[i:(i+window)], 0.75, axis=0))
-    return ran
+        ran.append(np.quantile(array[i:(i+window)], 0.75, axis=0) - \
+            np.quantile(array[i:(i+window)], 0.25, axis=0))
+    return np.array(ran)
 
 def mov_intensity(t_acc, window):
     ai = []
@@ -141,7 +138,7 @@ def mov_intensity(t_acc, window):
     for i in range(round(t_acc.shape[0]/window)):
         i*=window
         vi.append(np.sum(t_acc[i:(i+window)]-np.mean(ai))/window)
-    return ai, vi
+    return np.array(ai).reshape(-1,1), np.array(vi).reshape(-1,1)
 
 def sma(array, window):
     sma=[]
@@ -149,7 +146,7 @@ def sma(array, window):
     for i in range(round(array.shape[0]/window)):
         i*=window
         sma.append(np.sum(array[i:(i+window)], axis = 1))
-    return sma
+    return np.array(sma).reshape(-1,1)
 
 def cagh(head1, head2, grav):
     euc = np.sqrt(np.add(np.square(head1),
@@ -166,10 +163,18 @@ def df_energy(array):
         ener.append(np.sum(fourier)/array.shape[0])
     aae = np.mean(ener[0:2])
     are = np.mean(ener[3:5])
-    return domf, ener, aae, are
+    return np.array(domf), np.array(ener), aae, are
     
 
+def pca_feature(x, y, test_size):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, \
+        test_size = test_size, random_state=0)
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_test = sc.transform(X_test)
+    pca = PCA()
 
+    return pca, X_train, X_test, y_train, y_test
 
 
 '''
