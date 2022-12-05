@@ -1,12 +1,25 @@
 import numpy as np
 from numpy.linalg import norm
 from sklearn import datasets, linear_model, metrics
-from scipy import fft
+from scipy import fft, stats
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 # X.sample usado em DataFrame e nao nparrays
+
+def zscore(scores, axis=0):
+    
+    a = np.asanyarray(scores)
+    if a.size == 0:
+        return np.empty(a.shape)
+    
+    mn = a.mean(axis=axis, keepdims=True)
+    std = a.std(axis=axis)
+    
+    z = (scores - mn) / std
+    # Set the outputs associated with a constant input to nan.
+    return z
 
 def get_centroids(data, clusters):
     if type(data) != np.ndarray:
