@@ -14,11 +14,11 @@ def zscore(scores, k, axis=0):
     if a.size == 0:
         return np.empty(a.shape)
     
-    mn = a.mean(axis=axis, keepdims=True)
-    std = a.std(axis=axis)
+    mn = np.mean(a, axis = axis)
+    std = np.std(a, axis = axis)
     
     z = (scores - mn) / std
-    outliers = scores[(scores <= -3) | (scores >= 3)]
+    outliers = scores[(scores < -k) | (scores > k)]
     
     return z, outliers
 
