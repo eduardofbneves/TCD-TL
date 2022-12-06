@@ -8,7 +8,7 @@ from sklearn.decomposition import PCA
 
 # X.sample usado em DataFrame e nao nparrays
 
-def zscore(scores, axis=0):
+def zscore(scores, k, axis=0):
     
     a = np.asanyarray(scores)
     if a.size == 0:
@@ -18,8 +18,10 @@ def zscore(scores, axis=0):
     std = a.std(axis=axis)
     
     z = (scores - mn) / std
-    # Set the outputs associated with a constant input to nan.
-    return z
+    outliers = scores[(scores <= -3) | (scores >= 3)]
+    
+    return z, outliers
+
 
 def get_centroids(data, clusters):
     if type(data) != np.ndarray:
@@ -53,6 +55,7 @@ def k_means(data, clusters):
         dist = get_distance(data, centroids, clusters)
         cluster = np.argmin(dist, axis=1)
     return centroids, cluster
+
 
 def get_outliers(vec):
     q1 = np.quantile(vec, 0.25)
