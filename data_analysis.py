@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
-import utils
+import mainActivity
 
 loc = []
 
@@ -47,57 +47,21 @@ t_mag = np.sqrt(np.add(np.square(array[:,7]),
                        np.square(array[:,9])))
 
 
-# act1 = t_acc[array[:,-1]==5]
-
-activities = np.arange(1, 17) # nao sei se util
+activities = np.arange(1, 17) 
 box_acc = [] # TODO ver se dá para fazer isto com np.array
 box_gyr = []
 box_mag = []
 for i in range(1,17):
     act = (array[:,-1]==i)
-    box_acc.append(t_acc[act]) # usar list porque colunas tem tamanhos diferentes
+    #length = np.sum(act)
+    box_acc.append(t_acc[act]) 
     box_gyr.append(t_gyr[act])
     box_mag.append(t_mag[act])
-
-#box_acc = np.array(box_acc)
-plt.figure()
-fig, axs = plt.subplots(3)
-axs[0].boxplot(box_acc)
-axs[1].boxplot(box_gyr)
-axs[2].boxplot(box_mag)
-
-# desvio e outliers para cada k = 3, 3.5, 4
-d = []
-outliersk = [] 
-
-# for c, d in zip(a, b) itera alternadamente cada lista no mesmo loop
-for box in ([box_acc, box_gyr, box_mag]):
-    for i in range(0,activities.size):
-        q1 = np.quantile(box[:][i], 0.25)
-        q3 = np.quantile(box[:][i], 0.75)
-        med = np.median(box[:][i])
-        
-        iqr = q3-q1
-        upper_bound = q3+(1.5*iqr)
-        lower_bound = q1-(1.5*iqr)
     
-        outliers = box[:][i][(box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)]
-        out_bool = (box[:][i] <= lower_bound) | (box[:][i] >= upper_bound)
-        #print('The following are the outliers in the boxplot:{}'.format(outliers))
-        box[:][i] = box[:][i][(box[:][i] >= lower_bound) & (box[:][i] <= upper_bound)]
-        
-        print(i)
-        unique, counts = np.unique(out_bool, return_counts=True)
-        d.append((counts[1]/out_bool.size)*100) # TODO se a coluna nao tiver desvios
-        
-        zscore = stats.zscore(box[:][i], axis=0, ddof=0, nan_policy='propagate')
-        outliersk.append(box[:][i][(zscore <= -3) | (zscore >= 3)])
-        #print('The following are the outliers from the z-score test: {}'.format(outliersk[:][i]))
-        
-        centroids, cluster = utils.k_means(box[:][i], 3)
-        
-plt.figure()
-plt.boxplot(box, outliersk, 'gD')
-plt.title("k=3")
+t = box_acc[0]
+print(len(t))
+
+centroids, cluster = mainActivity.k_means(np.asanyarray(t).reshape(-1,1), 3)
+print(centroids, cluster)
 
 
