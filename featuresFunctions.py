@@ -57,11 +57,19 @@ def irange(array, window):
             np.quantile(array[i:(i+window)], 0.25, axis=0))
     return np.array(ran)
 
+def zero_crossing_rate(array, window):
+    zcr=[]
+    for i in range(round(array.shape[0]/window)):
+        i*=window
+        zcr.append((((array[i:(i+window)] * array[i:(i+window)]) < 0).sum())/window)
+    return np.array(zcr).reshape([-1, 1])
+
+
 def mean_crossing_rate(array, window):
     mcr=[]
     for i in range(round(array.shape[0]/window)):
         i*=window
-        mcr.append((((my_array[:-1] * my_array[1:]) < 0).sum())/len(arr))
+        mcr.append(zero_crossing_rate(np.array(array[i:(i+window)]) - np.mean(array[i:(i+window)]), window))
     return np.array(mcr)
 
 def spectral_entropy(array, window):
@@ -69,7 +77,7 @@ def spectral_entropy(array, window):
     for i in range(round(array.shape[0]/window)):
         i*=window
         se.append(fft.fft(array[i:(i+window)]))
-    return np.array(mcr)
+    return np.array(se).reshape([-1, 1])
 
 def mov_intensity(t_acc, window):
     ai = []
@@ -100,20 +108,26 @@ def eva(array, window):
         eva.append(eigenvectors)
     return np.array(eva)
 
-def cagh(head1, head2, grav):
-    euc = np.sqrt(np.add(np.square(head1),
-                           np.square(head2)))
-    out = np.cov(euc, grav)
-    return out
+def cagh(head1, head2, grav, window):
+    cagh = []
+    for i in range(round(head1.shape[0]/window)):
+        i*=window
+        euc = np.sqrt(np.add(np.square(head1[i:(i+window)]),
+                            np.square(head2[i:(i+window)])))
+        cagh.append(np.cov(euc, grav[i:(i+window)])[0,1]) # TODO cov e 2x2
+    return np.array(cagh).reshape([-1,1])
   
-def df_energy_aae_are(array):
+def df_energy_aae_are(array, window):
     domf = []
     ener = []
-    for i in range(array):
-        fourier = np.square(fft.fft(i))
+    aae = []
+    are = []
+    for i in range(round(array.shape[0]/window)):
+        fourier = np.square(fft.fft(array[i:(i+window)]))
         domf.append(np.max(fourier))
         ener.append(np.sum(fourier)/array.shape[0])
-    aae = np.mean(ener[0:2])
-    are = np.mean(ener[3:5])
-    return np.array(domf), np.array(ener), aae, are
+        aae.append(np.mean(ener[0:2]))
+        are.append(np.mean(ener[3:5]))
+    return np.array(domf).reshape([-1, 1]), np.array(ener).reshape([-1, 1]), \
+        np.array(aae).reshape([-1, 1]), np.array(are).reshape([-1, 1])
     
