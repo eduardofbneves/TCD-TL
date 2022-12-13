@@ -70,7 +70,7 @@ def mean_crossing_rate(array, window):
     for i in range(round(array.shape[0]/window)):
         i*=window
         mcr.append(zero_crossing_rate(np.array(array[i:(i+window)]) - np.mean(array[i:(i+window)]), window))
-    return np.array(mcr)
+    return np.array(mcr)[:,:,0]
 
 def spectral_entropy(array, window):
     se = []
@@ -106,7 +106,7 @@ def eva(array, window):
         cov = (np.cov(array[i:(i+window)]))
         eigenvalues, eigenvectors = np.linalg.eig(cov)
         eva.append(eigenvectors)
-    return np.array(eva)
+    return np.array(eva).reshape([-1,1])
 
 def cagh(head1, head2, grav, window):
     cagh = []
