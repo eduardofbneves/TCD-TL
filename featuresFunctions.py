@@ -96,7 +96,7 @@ def sma(array, window):
     array = np.absolute(array)
     for i in range(round(array.shape[0]/window)):
         i*=window
-        sma.append(np.sum(array[i:(i+window)], axis = 1))
+        sma.append(np.sum(np.sum(array[i:(i+window)], axis = 1)))
     return np.array(sma, dtype=object).reshape(-1,1)
 
 def eva(array, window):
@@ -105,8 +105,9 @@ def eva(array, window):
         i*=window
         cov = (np.cov(array[i:(i+window)]))
         eigenvalues, eigenvectors = np.linalg.eig(cov)
-        eva.append(eigenvectors)
-    return np.array(eva).reshape([-1,1])
+        ind = np.argpartition(eigenvalues, -2)[-2:]
+        eva.append(eigenvalues[ind])
+    return np.array(eva).reshape([-1,2])
 
 def cagh(head1, head2, grav, window):
     cagh = []
